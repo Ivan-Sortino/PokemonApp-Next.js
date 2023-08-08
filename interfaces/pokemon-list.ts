@@ -1,3 +1,4 @@
+//esta info me la dio https://quicktype.io/ metiendole la api a la pagina
 export interface PokemonListResponse {
     count:     number;
     next?:     string;
