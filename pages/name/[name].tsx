@@ -1,16 +1,11 @@
-import { useState } from 'react';
-import { GetStaticPaths, GetStaticProps } from 'next'
-import { NextPage } from 'next';
-
-import { Button, Card, Container, Grid, Text, Image } from '@nextui-org/react';
-import { localFavorites } from '@/utils';
-
-import confetti from 'canvas-confetti'
-
-import { pokeApi } from '@/api';
-import { Layout } from "@/components/layouts"
-import { Pokemon } from '@/interfaces';
-
+import { pokeApi } from "@/api";
+import { Layout } from "@/components/layouts";
+import { Pokemon, PokemonListResponse } from "@/interfaces";
+import { localFavorites } from "@/utils";
+import { Grid, Card, Button, Container, Text, Image } from "@nextui-org/react";
+import confetti from "canvas-confetti";
+import { NextPage, GetStaticPaths, GetStaticProps } from "next";
+import { useState } from "react";
 
 
 
@@ -20,7 +15,7 @@ interface Props{
   pokemon: Pokemon;
 }
 
-const PokemonPage: NextPage<Props> = ({pokemon}) => {
+const PokemonByNamePage: NextPage<Props> = ({pokemon}) => {
 
   const [isInFavorites, setIsInFavorites] = useState(localFavorites.existFavorites(pokemon.id))
   
@@ -78,7 +73,7 @@ const PokemonPage: NextPage<Props> = ({pokemon}) => {
                 <Card.Body>
                   <Text size={30}>Sprites:</Text>
                   <Container direction='row' display='flex' gap={0}>
-                    <Image 
+                    <Image
                       src={pokemon.sprites.front_default}
                       alt={pokemon.name}
                       width={100}
@@ -116,17 +111,18 @@ const PokemonPage: NextPage<Props> = ({pokemon}) => {
 
 
 
-
+//esta es la forma dinamica de recibir todos los argumentos con getStaticPaths
 export const getStaticPaths: GetStaticPaths = async (ctx) => { // Lo uso para el contenido dinamico por el archivo [id]
 
-  const pokemons151 = [...Array(151)].map( (value, index) => `${index + 1}` ); //destructuramos un array que tenga (151 lugares), lo barremos con un map, tomomas el value q es un null
-                                                                              //el index es la posicion indice de cada iteracion y nos regresa el index + 1 
-  
- 
+  const {data} = await pokeApi.get<PokemonListResponse>('pokemon?limit=151') //llamamos a pokeApi con el .get y tendremos una respuesta de <PokemonListResponse>  y llamamos entre () a los 151 pokemons
+
+  const pokemonName: string[] = data.results.map( pokemon => pokemon.name) //el nombre de los pokemones esta adentro de data y result entonces hacemos que data.result.map(para que nos devuelva un array con ese resultado)
+                                                                           //y le decimos que pokemon nos retorne pokemon.name 
+   
 
   return {
-    paths: pokemons151.map(id =>({
-      params: { id }
+    paths: pokemonName.map( name =>({ //hacemos que el pokemonName nos devuelva un objeto
+      params: { name }
     })),
       
     
@@ -134,12 +130,13 @@ export const getStaticPaths: GetStaticPaths = async (ctx) => { // Lo uso para el
     fallback: false //le pongo false porque si la pagina no esta en algun id ponga error 404
   }
 }
+
+//y el getStaticPropos va a recibir los argumentos del getStaticPaths
 export const getStaticProps: GetStaticProps = async ({params}) => { //del ctx destructuramos el params
   
-  console.log(params)
-  const { id } = params as {id: string} // destructuramos del params el id y le decimos q el id es string
+  const { name } = params as {name: string} // destructuramos del params el id y le decimos q el id es string
   
-  const {data} = await pokeApi.get<Pokemon>(`/pokemon/${id}`); // data son todas las caraceteristicas de pokemon
+  const {data} = await pokeApi.get<Pokemon>(`/pokemon/${name}`); // hacemos la peticion a pokeApi  y recibimos el name
   
   return {
     props: {
@@ -152,4 +149,4 @@ export const getStaticProps: GetStaticProps = async ({params}) => { //del ctx de
 
 
 
-export default PokemonPage
+export default PokemonByNamePage
