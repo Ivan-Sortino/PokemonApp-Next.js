@@ -1,7 +1,7 @@
 import { pokeApi } from "@/api";
 import { Layout } from "@/components/layouts";
 import { Pokemon, PokemonListResponse } from "@/interfaces";
-import { localFavorites } from "@/utils";
+import { getPokemonInfo, localFavorites } from "@/utils";
 import { Grid, Card, Button, Container, Text, Image } from "@nextui-org/react";
 import confetti from "canvas-confetti";
 import { NextPage, GetStaticPaths, GetStaticProps } from "next";
@@ -16,6 +16,7 @@ interface Props{
 }
 
 const PokemonByNamePage: NextPage<Props> = ({pokemon}) => {
+
 
   const [isInFavorites, setIsInFavorites] = useState(localFavorites.existFavorites(pokemon.id))
   
@@ -109,8 +110,6 @@ const PokemonByNamePage: NextPage<Props> = ({pokemon}) => {
 }
 
 
-
-
 //esta es la forma dinamica de recibir todos los argumentos con getStaticPaths
 export const getStaticPaths: GetStaticPaths = async (ctx) => { // Lo uso para el contenido dinamico por el archivo [id]
 
@@ -133,14 +132,20 @@ export const getStaticPaths: GetStaticPaths = async (ctx) => { // Lo uso para el
 
 //y el getStaticPropos va a recibir los argumentos del getStaticPaths
 export const getStaticProps: GetStaticProps = async ({params}) => { //del ctx destructuramos el params
-  
+
   const { name } = params as {name: string} // destructuramos del params el id y le decimos q el id es string
+
+  // const {data} = await pokeApi.get<Pokemon>(`/pokemon/${name}`); // hacemos la peticion a pokeApi  y recibimos el name
   
-  const {data} = await pokeApi.get<Pokemon>(`/pokemon/${name}`); // hacemos la peticion a pokeApi  y recibimos el name
-  
+  //   return {   ======> getPokemonInfo
+  //       id: data.id,
+  //       name: data.name,
+  //       sprites: data.sprites 
+  //   }
+
   return {
     props: {
-      pokemon: data
+      pokemon:await getPokemonInfo( name )
     }
   }
 

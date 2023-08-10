@@ -16,7 +16,7 @@ export const PokemonCard: FC<Props> = ({pokemon}) => {
     const router = useRouter(); //asignamos el router 
 
     const onclick = () =>{ // hacemos q cuando se de un click en una tarjeta pokemon me redireccione a [id].tsx
-        router.push(`/pokemon/${pokemon.id}`); //router.push sirve para mandar el url a la pagina de pokemon, le reasignamos el [id] por cada click con el id de diferentes tarjetas 
+        router.push(`/name/${pokemon.name}`); //router.push sirve para mandar el url a la pagina de pokemon, le reasignamos el [name] por cada click con el id de diferentes tarjetas 
     }
 
 

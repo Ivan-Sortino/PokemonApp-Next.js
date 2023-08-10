@@ -3,7 +3,7 @@ import { GetStaticPaths, GetStaticProps } from 'next'
 import { NextPage } from 'next';
 
 import { Button, Card, Container, Grid, Text, Image } from '@nextui-org/react';
-import { localFavorites } from '@/utils';
+import { getPokemonInfo, localFavorites } from '@/utils';
 
 import confetti from 'canvas-confetti'
 
@@ -128,22 +128,20 @@ export const getStaticPaths: GetStaticPaths = async (ctx) => { // Lo uso para el
     paths: pokemons151.map(id =>({
       params: { id }
     })),
-      
-    
+
     
     fallback: false //le pongo false porque si la pagina no esta en algun id ponga error 404
   }
 }
+
+
 export const getStaticProps: GetStaticProps = async ({params}) => { //del ctx destructuramos el params
-  
-  console.log(params)
+ 
   const { id } = params as {id: string} // destructuramos del params el id y le decimos q el id es string
-  
-  const {data} = await pokeApi.get<Pokemon>(`/pokemon/${id}`); // data son todas las caraceteristicas de pokemon
-  
+
   return {
     props: {
-      pokemon: data
+      pokemon:await getPokemonInfo( id )
     }
   }
 

@@ -19,7 +19,7 @@ export const Navbar = () => {
         backgroundColor: theme?.colors.gray900.value
     }}>
         
-         <Image
+         <Image priority
           src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/132.png"
           alt="icono de imagen"
           width={70}
@@ -39,7 +39,7 @@ export const Navbar = () => {
 
         <NextLink href='/favorites' passHref legacyBehavior>
           <Link>
-            <Text color="white">Favoritos</Text>
+            <Text color="white"><b>Favoritos</b></Text>
           </Link>
         </NextLink>
         
